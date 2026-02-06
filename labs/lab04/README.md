@@ -90,7 +90,7 @@ logger = logging.getLogger(__name__)
 ```
 
 Use the provided YAML template at `labs/lab04/config.yaml` to store **launch settings**.
-Update all appropriate values before you run your script.
+Update all appropriate values before you run your script. Use an existing Security Group that allows SSH access, and add an ingress rule to allow port 8888 from all addresses.
 
 ```yaml
 # labs/lab04/config.yaml
@@ -100,7 +100,7 @@ instance:
   ami_id: ami-0b6c6ebed2801a5cb # ubuntu 24.04lts
   instance_type: m7i.large
   key_name: your-key-name
-  security_group_id: sg-12345
+  security_group_id: sg-12345abcde
   role_name: EC2-S3-Instance-Role
   instance_profile_name: EC2-S3-Instance-Profile
 ```
@@ -548,7 +548,7 @@ if __name__ == "__main__":
 
 ### Challenge Extensions
 
-1. **Add a security group:** Modify your code to create a new security group allowing HTTP (port 8080) and SSH (port 22).
+1. **Add a security group:** Modify your code to create a new security group allowing HTTP (port 8888) and SSH (port 22).
 
 2. **Cleanup function:** Write a `cleanup()` function that tears down all resources in reverse order.
 
