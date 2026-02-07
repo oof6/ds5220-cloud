@@ -1,4 +1,4 @@
-# Lab 4: Infrastructure as Code with Python and `boto3`
+# Lab: Infrastructure as Code with Python and `boto3`
 
 ## Overview
 
