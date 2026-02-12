@@ -154,7 +154,7 @@ aws s3 rb s3://YOUR-BUCKET/
 
 ---
 
-# Answer Key
+## Answer Key
 1. **Separation:** Metadata is in the local `weather_lake.duckdb` file; Data is in S3. This is beneficial because compute/metadata are "ephemeral" and cheap, while storage is centralized, durable, and scales infinitely.
 2. **Pushdown:** No. Because of Hive Partitioning, DuckDB performs "Partition Pruning"—it only hits the S3 prefix for Chicago and ignores the other folders entirely.
 3. **Versioning:** The analyst can maintain multiple Views (e.g., `weather_v1`, `weather_v2`) in the same catalog pointing to different S3 paths, allowing for instant "A/B" testing of logic.
