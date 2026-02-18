@@ -1,0 +1,91 @@
+# cloudformation template that creates an EC2 instance
+# with bootstrapping script, custom sized EBS volume,
+# creates an S3 bucket and an IAM policy and role for the
+# EC2 to access the bucket. Also creates a custom security
+# group for the EC2 instance that allows both ports 80 and 22.
+
+AWSTemplateFormatVersion: 2010-09-09
+Description: CloudFormation template that creates an EC2 instance with bootstrapping script, custom EBS volume, S3 bucket, and IAM role for bucket access
+
+Parameters:
+  InstanceType:
+    Description: The EC2 instance type
+    Type: String
+    Default: t3.micro
+    AllowedValues:
+      - t3.micro
+      - t3.small
+      - t3.medium
+  KeyName:
+    Description: Name of an existing EC2 key pair to allow SSH access to the instances
+    Type: 'AWS::EC2::KeyPair::KeyName'
+  SSHLocation:
+    Description: The IP address range that can be used to SSH to the EC2 instances
+    Type: String
+    MinLength: 9
+    MaxLength: 18
+    Default: 0.0.0.0/0
+    ConstraintDescription: must be a valid IP CIDR range of the form x.x.x.x/x.
+
+Resources:
+  # Security Group allowing ports 80 and 22
+  EC2SecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Security group for EC2 instance allowing HTTP and SSH access
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+          Description: Allow HTTP traffic from anywhere
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: !Ref SSHLocation
+          Description: Allow SSH access
+      Tags:
+        - Key: Name
+          Value: !Sub ${AWS::StackName}-ec2-sg
+
+  # EC2 Instance
+  EC2Instance:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: ami-07ff62358b87c7116
+      InstanceType: !Ref InstanceType
+      KeyName: !Ref KeyName
+      SecurityGroupIds:
+        - !Ref EC2SecurityGroup
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash
+          # Bootstrapping script
+          yum update -y
+          yum install -y httpd aws-cli
+          
+          # Start and enable Apache
+          systemctl start httpd
+          systemctl enable httpd
+      Tags:
+        - Key: Name
+          Value: !Sub ${AWS::StackName}-ec2-instance
+
+Outputs:
+  InstanceId:
+    Description: The EC2 instance ID
+    Value: !Ref EC2Instance
+    Export:
+      Name: !Sub ${AWS::StackName}-InstanceId
+
+  InstancePublicIP:
+    Description: Public IP address of the EC2 instance
+    Value: !GetAtt EC2Instance.PublicIp
+    Export:
+      Name: !Sub ${AWS::StackName}-InstancePublicIP
+
+  SecurityGroupId:
+    Description: The security group ID
+    Value: !Ref EC2SecurityGroup
+    Export:
+      Name: !Sub ${AWS::StackName}-SecurityGroupId

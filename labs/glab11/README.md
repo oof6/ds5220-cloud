@@ -1,8 +1,6 @@
-# Graduate Lab 11: Run a Hypervisor
+# Graduate Lab: Run a Hypervisor
 
 Note: This is the first of five graduate labs.
-
-# Lab: Local Hypervisor and Ubuntu VM Setup
 
 ## Objective
 Set up a local virtualization environment and create your first Ubuntu virtual machine. This lab introduces you to hypervisor technology—a fundamental building block for cloud computing and data science infrastructure work.
